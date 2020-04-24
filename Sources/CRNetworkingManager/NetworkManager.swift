@@ -1,6 +1,6 @@
 import Foundation
 
-final class CRNetworkingManager {
+final class NetworkManager {
 	
 	private let networkLoader: NetworkDataLoader
 	private let expectedResponseCodes = Set.init(200 ... 299)
