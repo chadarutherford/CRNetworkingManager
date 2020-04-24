@@ -31,7 +31,7 @@ final public class NetworkManager {
 		}
 	}
 	
-	func decodeObjects<T: Decodable>(using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
+	public func decodeObjects<T: Decodable>(using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
 		networkLoader.loadData(using: url) { data, response, error in
 			guard error == nil else {
 				completion(.failure(.unknownError))
