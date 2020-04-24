@@ -1,3 +1,3 @@
 # CRNetworkingManager
 
-A description of this package.
+Networking Swift package.
