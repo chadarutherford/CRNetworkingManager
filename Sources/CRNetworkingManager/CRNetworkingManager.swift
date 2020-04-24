@@ -7,7 +7,7 @@ final class CRNetworkingManager {
 	
 	typealias CompleteSuccess = (Bool) -> Void
 	
-	init(networkLoader: NetworkDataLoader = URLSession.shared) {
+	public init(networkLoader: NetworkDataLoader = URLSession.shared) {
 		self.networkLoader = networkLoader
 	}
 	
