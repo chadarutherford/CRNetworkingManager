@@ -16,7 +16,7 @@ final class CRNetworkingManagerTests: XCTestCase {
 		
 		var networkResults = [Pokemon]()
 		
-		let networkManager = CRNetworkingManager()
+		let networkManager = NetworkManager()
 		let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
 		let waitForNetwork = expectation(description: "Waiting on network")
 		networkManager.decodeObjects(using: url) { (result: Result<PokemonResults, NetworkError>) in
@@ -38,7 +38,7 @@ final class CRNetworkingManagerTests: XCTestCase {
 		
 		let mock = MockLoader()
 		mock.data = pokemonData
-		let networkManager = CRNetworkingManager(networkLoader: mock)
+		let networkManager = NetworkManager(networkLoader: mock)
 		let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
 		let waitForMockNetwork = expectation(description: "Waiting on mock network")
 		networkManager.decodeObjects(using: url) { (result: Result<PokemonResults, NetworkError>) in

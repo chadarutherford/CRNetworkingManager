@@ -7,23 +7,23 @@
 
 import Foundation
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
 	case get = "GET"
 	case post = "POST"
 	case delete = "DELETE"
 	case put = "PUT"
 }
 
-enum HTTPHeaderType: String {
+public enum HTTPHeaderType: String {
 	case contentType = "Content-Type"
 	case authorization = "Authorization"
 }
 
-enum HTTPHeaderValue: String {
+public enum HTTPHeaderValue: String {
 	case json = "application/json"
 }
 
-struct EncodingStatus {
+public struct EncodingStatus {
 	let request: URLRequest?
 	let error: Error?
 }

@@ -1,13 +1,13 @@
 import Foundation
 
-final class NetworkManager {
+final public class NetworkManager {
 	
 	private let networkLoader: NetworkDataLoader
 	private let expectedResponseCodes = Set.init(200 ... 299)
 	
 	typealias CompleteSuccess = (Bool) -> Void
 	
-	public init(networkLoader: NetworkDataLoader = URLSession.shared) {
+	init(networkLoader: NetworkDataLoader = URLSession.shared) {
 		self.networkLoader = networkLoader
 	}
 	
@@ -31,7 +31,7 @@ final class NetworkManager {
 		}
 	}
 	
-	public func decodeObjects<T: Decodable>(using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
+	func decodeObjects<T: Decodable>(using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
 		networkLoader.loadData(using: url) { data, response, error in
 			guard error == nil else {
 				completion(.failure(.unknownError))
