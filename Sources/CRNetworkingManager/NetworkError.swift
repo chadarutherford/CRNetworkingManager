@@ -12,4 +12,17 @@ public enum NetworkError: Error {
 	case invalidResponse
 	case invalidData
 	case decodeError
+	
+	public var localizedDescription: String {
+		switch self {
+		case .unknownError:
+			return "An unknown error occurred"
+		case .invalidResponse:
+			return "The response from the server was invalid. Please try again"
+		case .invalidData:
+			return "The data returned from the server was invalid."
+		case .decodeError:
+			return "There was an error decoding objects."
+		}
+	}
 }

@@ -5,20 +5,8 @@ final public class NetworkManager {
 	private let networkLoader: NetworkDataLoader
 	private let expectedResponseCodes = Set.init(200 ... 299)
 	
-	typealias CompleteSuccess = (Bool) -> Void
-	
 	public init(networkLoader: NetworkDataLoader = URLSession.shared) {
 		self.networkLoader = networkLoader
-	}
-	
-	public func createRequest(url: URL?, method: HTTPMethod, headerType: HTTPHeaderType? = nil, headerValue: HTTPHeaderValue? = nil) -> URLRequest? {
-		guard let requestURL = url else { return nil }
-		var request = URLRequest(url: requestURL)
-		request.httpMethod = method.rawValue
-		if let headerType = headerType, let headerValue = headerValue {
-			request.setValue(headerValue.rawValue, forHTTPHeaderField: headerType.rawValue)
-		}
-		return request
 	}
 	
 	private func decode<T: Decodable>(to type: T.Type, data: Data) -> T? {
