@@ -6,4 +6,4 @@ Networking Framework build in Swift using Generics and Protocols
 
 # Screenshots
 ----
-![alt text](https://raw.githubusercontent.com/chadarutherford/CruiseAlong/develop/Screenshots/mapScreen.png)
+![alt text](https://raw.githubusercontent.com/chadarutherford/CRNetworkingManager/master/Screenshots/SPM_example.png)
