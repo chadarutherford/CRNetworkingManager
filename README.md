@@ -12,3 +12,8 @@ Screenshots were made using Networking Manager to decode a basic Pokedex.
 # Screenshots
 ----
 ![alt text](https://raw.githubusercontent.com/chadarutherford/CRNetworkingManager/master/Screenshots/SPM_example.png)
+
+
+<!-- Badges -->
+[swift-image]: https://img.shields.io/badge/swift-5.2-orange.svg
+[swift-url]: https://swift.org/
