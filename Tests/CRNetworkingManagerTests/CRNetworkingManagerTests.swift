@@ -28,4 +28,28 @@ final class CRNetworkingManagerTests: XCTestCase {
         let pokemon = networkResults.results
         XCTAssertGreaterThan(pokemon.count, 0)
 	}
+    
+    func testNon200ResponseFailsDecode() async throws {
+        let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
+        let mock = MockLoader(data: pokemonData, response: HTTPURLResponse(url: url, statusCode: 400, httpVersion: nil, headerFields: nil)!)
+        let networkManager = NetworkManager(networkLoader: mock)
+        do {
+            let _: PokemonResults = try await networkManager.decodeObjects(using: url)
+            XCTFail("Expected Error: \(NetworkError.invalidResponse)")
+        } catch {
+            XCTAssertEqual(error as? NetworkError, NetworkError.invalidResponse)
+        }
+    }
+    
+    func testMockDecodeObjectsMalformedJSONFailsDecode() async throws {
+        let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
+        let mock = MockLoader(data: pokemonDataMalformed, response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        let networkManager = NetworkManager(networkLoader: mock)
+        do {
+            let _: PokemonResults = try await networkManager.decodeObjects(using: url)
+            XCTFail("Expected Error: \(NetworkError.decodeError)")
+        } catch {
+            XCTAssertEqual(error as? NetworkError, NetworkError.decodeError)
+        }
+    }
 }

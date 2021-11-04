@@ -31,38 +31,38 @@ final public class NetworkManager {
         }
     }
 
+    @discardableResult
     public func decodeObjects<T: Decodable>(using url: URL) async throws -> T {
-        do {
-            let (data, response) = try await networkLoader.loadData(using: url)
-            guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
-                throw NetworkError.invalidResponse
-            }
-            
-            guard let results = self.decode(to: T.self, data: data) else {
-                throw NetworkError.decodeError
-            }
-            
-            return results
-        } catch {
+        guard let (data, response) = try? await networkLoader.loadData(using: url) else {
             throw NetworkError.unknownError
         }
+        
+        guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
+            throw NetworkError.invalidResponse
+        }
+        
+        guard let results = self.decode(to: T.self, data: data) else {
+            throw NetworkError.decodeError
+        }
+        
+        return results
     }
 
+    @discardableResult
     public func decodeCoreDataObjects<T: Decodable>(in context: NSManagedObjectContext, using url: URL) async throws -> T {
-        do {
-            let (data, response) = try await networkLoader.loadData(using: url)
-            guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
-                throw NetworkError.invalidResponse
-            }
-            
-            guard let results = self.coreDataDecode(in: context, to: T.self, data: data) else {
-                throw NetworkError.decodeError
-            }
-            
-            return results
-        } catch {
+        guard let (data, response) = try? await networkLoader.loadData(using: url) else {
             throw NetworkError.unknownError
         }
+        
+        guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
+            throw NetworkError.invalidResponse
+        }
+        
+        guard let results = self.coreDataDecode(in: context, to: T.self, data: data) else {
+            throw NetworkError.decodeError
+        }
+        
+        return results
     }
 }
 
