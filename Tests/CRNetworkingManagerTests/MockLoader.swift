@@ -9,15 +9,20 @@ import Foundation
 @testable import CRNetworkingManager
 
 class MockLoader: NetworkDataLoader {
-	var data: Data?
-	var response: HTTPURLResponse?
-	var error: Error?
+	var data: Data
+	var response: URLResponse
 	
-	func loadData(using url: URL, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
-		completion(self.data, self.response, self.error)
+    init(data: Data, response: URLResponse) {
+        self.data = data
+        self.response = response
+    }
+	func loadData(using url: URL) async throws -> (Data, URLResponse) {
+        await Task.sleep(UInt64(0.5 * Double(NSEC_PER_SEC)))
+        return (data, response)
 	}
 	
-	func loadData(using request: URLRequest, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
-		completion(self.data, self.response, self.error)
+	func loadData(using request: URLRequest) async throws -> (Data, URLResponse) {
+        await Task.sleep(UInt64(0.5 * Double(NSEC_PER_SEC)))
+        return (data, response)
 	}
 }

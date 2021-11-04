@@ -12,46 +12,20 @@ final class CRNetworkingManagerTests: XCTestCase {
 		let results: [Pokemon]
 	}
 	
-	func testDecodeObjects() {
-		
-		var networkResults = [Pokemon]()
-		
+	func testDecodeObjects() async throws {
 		let networkManager = NetworkManager()
 		let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
-		let waitForNetwork = expectation(description: "Waiting on network")
-		networkManager.decodeObjects(using: url) { (result: Result<PokemonResults, NetworkError>) in
-			switch result {
-			case .success(let results):
-				networkResults = results.results
-			case .failure(let error):
-				XCTFail("Error decoding results: \(error)")
-			}
-			waitForNetwork.fulfill()
-		}
-		
-		wait(for: [waitForNetwork], timeout: 10)
-		XCTAssert(networkResults.count > 0)
+        let networkResults: PokemonResults = try await networkManager.decodeObjects(using: url)
+        let pokemon = networkResults.results
+        XCTAssertGreaterThan(pokemon.count, 0)
 	}
 	
-	func testMockDecodeObjects() {
-		var networkResults = [Pokemon]()
-		
-		let mock = MockLoader()
-		mock.data = pokemonData
-		let networkManager = NetworkManager(networkLoader: mock)
-		let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
-		let waitForMockNetwork = expectation(description: "Waiting on mock network")
-		networkManager.decodeObjects(using: url) { (result: Result<PokemonResults, NetworkError>) in
-			switch result {
-			case .success(let results):
-				networkResults = results.results
-			case .failure(let error):
-				XCTFail("Error decoding results: \(error)")
-			}
-			waitForMockNetwork.fulfill()
-		}
-		
-		wait(for: [waitForMockNetwork], timeout: 5)
-		XCTAssert(networkResults.count > 0)
+	func testMockDecodeObjects() async throws {
+        let url = URL(string: "https://pokeapi.co/api/v2/pokemon/")!
+        let mock = MockLoader(data: pokemonData, response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        let networkManager = NetworkManager(networkLoader: mock)
+        let networkResults: PokemonResults = try await networkManager.decodeObjects(using: url)
+        let pokemon = networkResults.results
+        XCTAssertGreaterThan(pokemon.count, 0)
 	}
 }

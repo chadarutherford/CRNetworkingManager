@@ -31,75 +31,37 @@ final public class NetworkManager {
         }
     }
 
-    public func decodeObjects<T: Decodable>(using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
-        networkLoader.loadData(using: url) { data, response, error in
-            guard error == nil else {
-                DispatchQueue.main.async {
-                    completion(.failure(.unknownError))
-                }
-                return
+    public func decodeObjects<T: Decodable>(using url: URL) async throws -> T {
+        do {
+            let (data, response) = try await networkLoader.loadData(using: url)
+            guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
+                throw NetworkError.invalidResponse
             }
-
-            if let response = response, !self.expectedResponseCodes.contains(response.statusCode) {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidResponse))
-                }
-                return
-            }
-
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidData))
-                }
-                return
-            }
-
+            
             guard let results = self.decode(to: T.self, data: data) else {
-                DispatchQueue.main.async {
-                    completion(.failure(.decodeError))
-                }
-                return
+                throw NetworkError.decodeError
             }
-
-            DispatchQueue.main.async {
-                completion(.success(results))
-            }
+            
+            return results
+        } catch {
+            throw NetworkError.unknownError
         }
     }
 
-    public func decodeCoreDataObjects<T: Decodable>(in context: NSManagedObjectContext, using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
-        networkLoader.loadData(using: url) { data, response, error in
-            guard error == nil else {
-                DispatchQueue.main.async {
-                    completion(.failure(.unknownError))
-                }
-                return
+    public func decodeCoreDataObjects<T: Decodable>(in context: NSManagedObjectContext, using url: URL) async throws -> T {
+        do {
+            let (data, response) = try await networkLoader.loadData(using: url)
+            guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
+                throw NetworkError.invalidResponse
             }
-
-            if let response = response, !self.expectedResponseCodes.contains(response.statusCode) {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidResponse))
-                }
-                return
-            }
-
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidData))
-                }
-                return
-            }
-
+            
             guard let results = self.coreDataDecode(in: context, to: T.self, data: data) else {
-                DispatchQueue.main.async {
-                    completion(.failure(.decodeError))
-                }
-                return
+                throw NetworkError.decodeError
             }
-
-            DispatchQueue.main.async {
-                completion(.success(results))
-            }
+            
+            return results
+        } catch {
+            throw NetworkError.unknownError
         }
     }
 }
