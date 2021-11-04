@@ -3,6 +3,7 @@
 Networking Framework build in Swift using Generics and Protocols
 - Enables mocking of networking code to use in Unit Tests.
 - Generics enables it to handle any type.
+- New and improved networking utilizing Swift's new structured concurrency and async/await APIs
 
 Screenshots were made using Networking Manager to decode a basic Pokedex.
 
@@ -15,5 +16,5 @@ Screenshots were made using Networking Manager to decode a basic Pokedex.
 
 
 <!-- Badges -->
-[swift-image]: https://img.shields.io/badge/swift-5.2-orange.svg
+[swift-image]: https://img.shields.io/badge/swift-5.5-orange.svg
 [swift-url]: https://swift.org/

@@ -20,17 +20,6 @@ final public class NetworkManager {
         }
     }
 
-    private func coreDataDecode<T:Decodable>(in context: NSManagedObjectContext, to type: T.Type, data: Data) -> T? {
-        let decoder = JSONDecoder()
-        decoder.userInfo[CodingUserInfoKey.managedObjectContext] = context
-        do {
-            let decodedType = try decoder.decode(T.self, from: data)
-            return decodedType
-        } catch {
-            return nil
-        }
-    }
-
     @discardableResult
     public func decodeObjects<T: Decodable>(using url: URL) async throws -> T {
         guard let (data, response) = try? await networkLoader.loadData(using: url) else {
@@ -47,10 +36,10 @@ final public class NetworkManager {
         
         return results
     }
-
+    
     @discardableResult
-    public func decodeCoreDataObjects<T: Decodable>(in context: NSManagedObjectContext, using url: URL) async throws -> T {
-        guard let (data, response) = try? await networkLoader.loadData(using: url) else {
+    public func decodeObjects<T: Decodable>(using request: URLRequest) async throws -> T {
+        guard let (data, response) = try? await networkLoader.loadData(using: request) else {
             throw NetworkError.unknownError
         }
         
@@ -58,7 +47,7 @@ final public class NetworkManager {
             throw NetworkError.invalidResponse
         }
         
-        guard let results = self.coreDataDecode(in: context, to: T.self, data: data) else {
+        guard let results = self.decode(to: T.self, data: data) else {
             throw NetworkError.decodeError
         }
         
