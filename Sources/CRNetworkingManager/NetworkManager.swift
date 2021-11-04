@@ -20,87 +20,38 @@ final public class NetworkManager {
         }
     }
 
-    private func coreDataDecode<T:Decodable>(in context: NSManagedObjectContext, to type: T.Type, data: Data) -> T? {
-        let decoder = JSONDecoder()
-        decoder.userInfo[CodingUserInfoKey.managedObjectContext] = context
-        do {
-            let decodedType = try decoder.decode(T.self, from: data)
-            return decodedType
-        } catch {
-            return nil
+    @discardableResult
+    public func decodeObjects<T: Decodable>(using url: URL) async throws -> T {
+        guard let (data, response) = try? await networkLoader.loadData(using: url) else {
+            throw NetworkError.unknownError
         }
+        
+        guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
+            throw NetworkError.invalidResponse
+        }
+        
+        guard let results = self.decode(to: T.self, data: data) else {
+            throw NetworkError.decodeError
+        }
+        
+        return results
     }
-
-    public func decodeObjects<T: Decodable>(using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
-        networkLoader.loadData(using: url) { data, response, error in
-            guard error == nil else {
-                DispatchQueue.main.async {
-                    completion(.failure(.unknownError))
-                }
-                return
-            }
-
-            if let response = response, !self.expectedResponseCodes.contains(response.statusCode) {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidResponse))
-                }
-                return
-            }
-
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidData))
-                }
-                return
-            }
-
-            guard let results = self.decode(to: T.self, data: data) else {
-                DispatchQueue.main.async {
-                    completion(.failure(.decodeError))
-                }
-                return
-            }
-
-            DispatchQueue.main.async {
-                completion(.success(results))
-            }
+    
+    @discardableResult
+    public func decodeObjects<T: Decodable>(using request: URLRequest) async throws -> T {
+        guard let (data, response) = try? await networkLoader.loadData(using: request) else {
+            throw NetworkError.unknownError
         }
-    }
-
-    public func decodeCoreDataObjects<T: Decodable>(in context: NSManagedObjectContext, using url: URL, completion: @escaping (Result<T, NetworkError>) -> Void) {
-        networkLoader.loadData(using: url) { data, response, error in
-            guard error == nil else {
-                DispatchQueue.main.async {
-                    completion(.failure(.unknownError))
-                }
-                return
-            }
-
-            if let response = response, !self.expectedResponseCodes.contains(response.statusCode) {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidResponse))
-                }
-                return
-            }
-
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(.invalidData))
-                }
-                return
-            }
-
-            guard let results = self.coreDataDecode(in: context, to: T.self, data: data) else {
-                DispatchQueue.main.async {
-                    completion(.failure(.decodeError))
-                }
-                return
-            }
-
-            DispatchQueue.main.async {
-                completion(.success(results))
-            }
+        
+        guard let httpResponse = response as? HTTPURLResponse, self.expectedResponseCodes.contains(httpResponse.statusCode) else {
+            throw NetworkError.invalidResponse
         }
+        
+        guard let results = self.decode(to: T.self, data: data) else {
+            throw NetworkError.decodeError
+        }
+        
+        return results
     }
 }
 

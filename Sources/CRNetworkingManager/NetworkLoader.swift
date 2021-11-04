@@ -8,20 +8,16 @@
 import Foundation
 
 public protocol NetworkDataLoader {
-	func loadData(using url: URL, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void)
-	func loadData(using request: URLRequest, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void)
+	func loadData(using url: URL) async throws -> (Data, URLResponse)
+	func loadData(using request: URLRequest) async throws -> (Data, URLResponse)
 }
 
 extension URLSession: NetworkDataLoader {
-	public func loadData(using url: URL, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
-		dataTask(with: url) { data, response, error in
-			completion(data, response as? HTTPURLResponse, error)
-		}.resume()
+	public func loadData(using url: URL) async throws -> (Data, URLResponse) {
+        try await data(from: url)
 	}
 	
-	public func loadData(using request: URLRequest, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
-		dataTask(with: request) { data, response, error in
-			completion(data, response as? HTTPURLResponse, error)
-		}.resume()
+	public func loadData(using request: URLRequest) async throws -> (Data, URLResponse) {
+		try await data(for: request)
 	}
 }
